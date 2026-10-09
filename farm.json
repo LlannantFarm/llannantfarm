@@ -1,0 +1,59 @@
+{
+  "updated": "2026-10-09",
+  "banner": {
+    "message": "",
+    "link": ""
+  },
+  "crops": [
+    {
+      "id": "pumpkins",
+      "name": "Pumpkins",
+      "emoji": "🎃",
+      "season": "October",
+      "dates": ["2026-10-10", "2026-10-17"],
+      "open": "10:00",
+      "close": "16:00",
+      "soldOut": false,
+      "tagline": "Small patch, so once they're gone, they're gone!",
+      "description": "Big Loretta pumpkins, proper carvers. It's only a small patch, so once they're gone, they're gone!",
+      "closedNote": "Pumpkin picking is finished for this year. Thank you to everyone who came along!",
+      "nextSeason": "October 2027",
+      "bookingUrl": "",
+      "image": ""
+    },
+    {
+      "id": "sweetcorn",
+      "name": "Sweetcorn & summer veg",
+      "emoji": "🌽",
+      "season": "August into September, weekends",
+      "dates": [],
+      "open": "10:00",
+      "close": "16:00",
+      "soldOut": false,
+      "tagline": "",
+      "description": "Sweetcorn picked straight from the stalk. In season you can also buy it at Shepherds Fruit and Veg on Gorseinon High Street.",
+      "closedNote": "Closed for 2026. Thank you to everyone who came along!",
+      "nextSeason": "August 2027",
+      "bookingUrl": "",
+      "image": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/0e39a956-192c-4e98-8444-241e04686802/IMG_0354.JPEG?format=1000w"
+    }
+  ],
+  "visit": {
+    "address": "",
+    "postcode": "",
+    "what3words": "",
+    "directions": "",
+    "facts": [
+      { "label": "Bring", "text": "Wellies. It's a working field." },
+      { "label": "Before you set off", "text": "Check our Facebook page for any last-minute changes." }
+    ],
+    "faqs": [
+      { "q": "Do I need to book?", "a": "No, just turn up during opening hours. It's a small patch, so come early for the best pick." },
+      { "q": "What if the weather's bad?", "a": "If we have to close, we'll post on our Facebook page and update this page." }
+    ]
+  },
+  "links": {
+    "facebook": "https://www.facebook.com/llannantfarm",
+    "email": "andrew@llannantfarm.com"
+  }
+}

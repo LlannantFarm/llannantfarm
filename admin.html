@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Llannant Farm Editor</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --panel: #ffffff; --text: #1f2a1d; --muted: #646a60; --line: #e2dfd6;
+    --accent: #2c4428; --accent-text: #ffffff; --pumpkin: #d4652a; --ok: #1a7f4b; --err: #b3261e;
+    --warn-bg: #fff4e0; --warn: #8a5300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151714; --panel: #1f221e; --text: #eef0ec; --muted: #a3a99f; --line: #353a33;
+      --accent: #7fb26f; --accent-text: #0e170c; --pumpkin: #f08a4b; --ok: #4cc38a; --err: #ff8a80;
+      --warn-bg: #3a2a10; --warn: #ffc56b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { background: var(--accent); color: var(--accent-text); padding: 14px 16px; }
+  header h1 { margin: 0; font-size: 18px; }
+  nav { display: flex; gap: 4px; padding: 10px 16px 0; max-width: 900px; margin: 0 auto; flex-wrap: wrap; }
+  nav button { border: 1px solid var(--line); border-bottom: 0; background: transparent; color: var(--muted); padding: 8px 14px; border-radius: 8px 8px 0 0; font: inherit; cursor: pointer; }
+  nav button[aria-selected="true"] { background: var(--panel); color: var(--text); font-weight: 600; }
+  main { max-width: 900px; margin: 0 auto; padding: 0 16px 40px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 0 10px 10px 10px; padding: 20px; }
+  label { display: block; font-weight: 600; margin: 14px 0 4px; }
+  input[type=text], input[type=password], input[type=url], input[type=date], input[type=time], textarea { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); font: inherit; }
+  textarea { min-height: 72px; resize: vertical; }
+  .hint { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  button.primary, button.secondary, button.danger { padding: 10px 16px; border-radius: 6px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--accent-text); border: 0; }
+  button.primary:disabled { opacity: .45; cursor: not-allowed; }
+  button.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  button.danger { background: transparent; color: var(--err); border: 1px solid var(--line); }
+  .small { padding: 5px 10px !important; font-size: 13px !important; }
+  .status { margin: 0 0 12px; min-height: 1.5em; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-top: 16px; }
+  .card h3 { margin: 0; font-size: 17px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  @media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
+  .soldout { display: flex; gap: 10px; align-items: center; background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 12px 14px; margin-top: 14px; font-weight: 600; cursor: pointer; }
+  .soldout input { width: 22px; height: 22px; }
+  .dates { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .date-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 12px; background: var(--bg); }
+  .date-chip.past { opacity: .5; }
+  .date-chip button { border: 0; background: transparent; color: var(--err); font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px; }
+  .add-date { display: flex; gap: 8px; margin-top: 8px; max-width: 320px; }
+  .row { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
+  .sticky { position: sticky; bottom: 0; background: var(--panel); padding: 12px 0 4px; border-top: 1px solid var(--line); margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .dirty { color: var(--pumpkin); font-weight: 600; font-size: 14px; }
+</style>
+</head>
+<body>
+<header><h1>Llannant Farm · Website editor</h1></header>
+<nav role="tablist">
+  <button role="tab" data-tab="crops" aria-selected="true">Picking</button>
+  <button role="tab" data-tab="visit" aria-selected="false">Visit &amp; FAQs</button>
+  <button role="tab" data-tab="connect" aria-selected="false">Connect</button>
+</nav>
+<main>
+  <div class="panel">
+    <p id="status" class="status" role="status"></p>
+    <section id="tab-crops"></section>
+    <section id="tab-visit" hidden></section>
+    <section id="tab-connect" hidden>
+      <p>This page saves your changes straight to the GitHub repository that the website reads from. These details are kept only in this browser, so use it on your own phone or computer.</p>
+      <label for="c-owner">GitHub username that owns the repository</label>
+      <input id="c-owner" type="text" autocomplete="off" placeholder="llannantfarm">
+      <label for="c-repo">Repository name</label>
+      <input id="c-repo" type="text" value="llannantfarm" autocomplete="off">
+      <label for="c-token">GitHub access token</label>
+      <input id="c-token" type="password" autocomplete="off">
+      <p class="hint">A fine-grained token with Contents: read and write on just this one repository.</p>
+      <div class="btns"><button class="primary" id="c-save">Save and connect</button></div>
+    </section>
+    <div class="sticky" id="savebar" hidden>
+      <button class="primary" id="save">Save to website</button>
+      <span id="dirty" class="dirty"></span>
+    </div>
+  </div>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k) { try { return localStorage.getItem("llannant." + k) || ""; } catch { return ""; } },
+  set(k, v) { try { localStorage.setItem("llannant." + k, v); } catch {} },
+};
+let conn = { owner: store.get("owner"), repo: store.get("repo") || "llannantfarm", token: store.get("token") };
+let doc = null, sha = null, dirty = false;
+
+function setStatus(msg, kind = "") { const s = $("#status"); s.textContent = msg; s.className = "status " + kind; }
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "text") e.textContent = v;
+    else if (k === "value") e.value = v;
+    else if (k === "checked") e.checked = !!v;
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) if (kid != null) e.append(kid);
+  return e;
+}
+function markDirty() { dirty = true; $("#dirty").textContent = "Unsaved changes"; }
+const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" });
+const niceDate = (d) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+
+// ---- GitHub contents API ----
+const b64encode = (str) => {
+  const bytes = new TextEncoder().encode(str); let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+};
+const b64decode = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), (c) => c.charCodeAt(0)));
+const api = (path) => `https://api.github.com/repos/${conn.owner}/${conn.repo}/contents/${path}`;
+async function gh(path, opts = {}) {
+  const res = await fetch(api(path), {
+    ...opts,
+    headers: { Authorization: `Bearer ${conn.token}`, Accept: "application/vnd.github+json", ...(opts.headers || {}) },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`GitHub ${res.status}: ${(await res.json().catch(() => ({}))).message || res.statusText}`);
+  return res.json();
+}
+
+// ---- Editors ----
+// A text input bound to obj[key]
+function field(obj, key, label, opts = {}) {
+  const input = el(opts.multiline ? "textarea" : "input", {
+    type: opts.multiline ? null : (opts.type || "text"), value: obj[key] || "", placeholder: opts.placeholder || null,
+    oninput: (e) => { obj[key] = e.target.value; markDirty(); },
+  });
+  return el("div", {}, el("label", { text: label }), input, opts.hint ? el("p", { class: "hint", text: opts.hint }) : null);
+}
+
+function cropCard(c, i) {
+  c.dates = c.dates || [];
+  const dates = el("div", { class: "dates" });
+  const drawDates = () => {
+    c.dates.sort();
+    dates.replaceChildren(...(c.dates.length ? c.dates.map((d) => el("span", { class: "date-chip" + (d < today() ? " past" : "") },
+      niceDate(d),
+      el("button", { type: "button", "aria-label": "Remove " + niceDate(d), text: "×", onclick: () => { c.dates = c.dates.filter((x) => x !== d); markDirty(); drawDates(); } })))
+      : [el("span", { class: "hint", text: "No opening days set, so this shows as closed for the season." })]));
+  };
+  drawDates();
+  const newDate = el("input", { type: "date" });
+  const addDate = () => {
+    if (newDate.value && !c.dates.includes(newDate.value)) { c.dates.push(newDate.value); markDirty(); drawDates(); }
+    newDate.value = "";
+  };
+
+  return el("div", { class: "card" },
+    el("h3", {}, (c.emoji ? c.emoji + " " : "") + (c.name || "New crop"),
+      el("button", { type: "button", class: "danger small", text: "Remove", onclick: () => {
+        if (confirm(`Remove ${c.name || "this crop"} from the website?`)) { doc.crops.splice(i, 1); markDirty(); drawCrops(); }
+      } })),
+    el("label", { class: "soldout" },
+      el("input", { type: "checkbox", checked: c.soldOut, onchange: (e) => { c.soldOut = e.target.checked; markDirty(); } }),
+      "Sold out (closes it on the website straight away)"),
+    el("label", { text: "Opening days" }),
+    dates,
+    el("div", { class: "add-date" }, newDate, el("button", { type: "button", class: "secondary small", text: "Add day", onclick: addDate })),
+    el("div", { class: "two" },
+      field(c, "open", "Opens at", { type: "time" }),
+      field(c, "close", "Closes at", { type: "time" })),
+    el("div", { class: "two" },
+      field(c, "name", "Name"),
+      field(c, "emoji", "Emoji", { hint: "Shown on the strip at the top, e.g. 🎃" })),
+    field(c, "season", "Season", { placeholder: "e.g. October" }),
+    field(c, "tagline", "Short line for the strip at the top", { placeholder: "Small patch, so once they're gone, they're gone!" }),
+    field(c, "description", "Description", { multiline: true }),
+    field(c, "closedNote", "Message once the season's over", { multiline: true }),
+    field(c, "nextSeason", "Back in", { placeholder: "e.g. August 2027" }),
+    field(c, "bookingUrl", "Booking link", { type: "url", hint: "Leave empty if people just turn up. Paste your Ticket Tailor link here when you start taking bookings." }),
+    field(c, "image", "Photo address", { type: "url", hint: "Optional. In Squarespace, right-click a photo and copy the image address." }));
+}
+
+function drawCrops() {
+  doc.banner = doc.banner || { message: "", link: "" };
+  $("#tab-crops").replaceChildren(
+    el("p", { class: "hint", text: "The website works out \"Open now\", \"Next open Saturday\" or \"Closed for the season\" from the opening days and times below, so you only need to set the days." }),
+    el("div", { class: "card" },
+      el("h3", { text: "Message override (optional)" }),
+      field(doc.banner, "message", "Replace the strip at the top with this message", { placeholder: "e.g. Closed today because of the weather, sorry!", hint: "Clear it to go back to the automatic opening times." }),
+      field(doc.banner, "link", "Button link for the message", { type: "url" })),
+    ...doc.crops.map(cropCard),
+    el("div", { class: "btns" }, el("button", { type: "button", class: "secondary", text: "Add a crop", onclick: () => {
+      doc.crops.push({ id: "crop-" + Date.now(), name: "", emoji: "", season: "", dates: [], open: "10:00", close: "16:00", soldOut: false, tagline: "", description: "", closedNote: "", nextSeason: "", bookingUrl: "", image: "" });
+      markDirty(); drawCrops();
+    } })));
+}
+
+function listEditor(list, fields, addLabel, redraw) {
+  return el("div", {},
+    ...list.map((item, i) => el("div", { class: "row" },
+      ...fields.map(([key, label, multiline]) => field(item, key, label, { multiline })),
+      el("div", { class: "btns" }, el("button", { type: "button", class: "danger small", text: "Remove", onclick: () => { list.splice(i, 1); markDirty(); redraw(); } })))),
+    el("div", { class: "btns" }, el("button", { type: "button", class: "secondary small", text: addLabel, onclick: () => {
+      list.push(Object.fromEntries(fields.map(([k]) => [k, ""]))); markDirty(); redraw();
+    } })));
+}
+
+function drawVisit() {
+  const v = doc.visit = doc.visit || {};
+  v.facts = v.facts || []; v.faqs = v.faqs || [];
+  $("#tab-visit").replaceChildren(
+    el("div", { class: "card" },
+      el("h3", { text: "Finding us" }),
+      field(v, "address", "Address", { placeholder: "Road, village, Swansea" }),
+      el("div", { class: "two" },
+        field(v, "postcode", "Postcode"),
+        field(v, "what3words", "what3words", { placeholder: "word.word.word", hint: "Handy for pointing people at the field gate rather than the house." })),
+      field(v, "directions", "Directions", { multiline: true, placeholder: "e.g. Follow the pumpkin signs from…" }),
+      el("p", { class: "hint", text: "Anything left empty is simply not shown." })),
+    el("div", { class: "card" }, el("h3", { text: "Useful to know" }),
+      listEditor(v.facts, [["label", "Heading"], ["text", "Text"]], "Add an item", drawVisit)),
+    el("div", { class: "card" }, el("h3", { text: "Questions" }),
+      listEditor(v.faqs, [["q", "Question"], ["a", "Answer", true]], "Add a question", drawVisit)));
+}
+
+// ---- Load and save ----
+async function load() {
+  setStatus("Loading…");
+  try {
+    const f = await gh("farm.json");
+    doc = JSON.parse(b64decode(f.content)); sha = f.sha;
+    doc.crops = doc.crops || [];
+    drawCrops(); drawVisit();
+    $("#savebar").hidden = false; dirty = false; $("#dirty").textContent = "";
+    setStatus(`Loaded. Last saved ${doc.updated || "unknown"}.`, "ok");
+  } catch (e) { setStatus(e.message, "err"); showTab("connect"); }
+}
+
+$("#save").onclick = async () => {
+  const btn = $("#save"); btn.disabled = true; setStatus("Saving…");
+  try {
+    doc.updated = today();
+    const res = await gh("farm.json", { method: "PUT", body: JSON.stringify({ message: "Update farm.json from the editor", content: b64encode(JSON.stringify(doc, null, 2) + "\n"), sha }) });
+    sha = res.content.sha; dirty = false; $("#dirty").textContent = "";
+    setStatus("Saved. The website updates within a few minutes.", "ok");
+  } catch (e) {
+    setStatus(e.message.includes("409") ? "Someone else saved a change. Reload the page and try again." : e.message, "err");
+  } finally { btn.disabled = false; }
+};
+
+function showTab(name) {
+  document.querySelectorAll("nav button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === name));
+  document.querySelectorAll("main section").forEach((s) => (s.hidden = s.id !== "tab-" + name));
+}
+document.querySelectorAll("nav button").forEach((b) => (b.onclick = () => showTab(b.dataset.tab)));
+window.addEventListener("beforeunload", (e) => { if (dirty) e.preventDefault(); });
+
+$("#c-owner").value = conn.owner; $("#c-repo").value = conn.repo; $("#c-token").value = conn.token;
+$("#c-save").onclick = () => {
+  conn = { owner: $("#c-owner").value.trim(), repo: $("#c-repo").value.trim(), token: $("#c-token").value.trim() };
+  store.set("owner", conn.owner); store.set("repo", conn.repo); store.set("token", conn.token);
+  showTab("crops"); load();
+};
+if (!conn.owner || !conn.token) { showTab("connect"); setStatus("Connect to your GitHub repository to begin."); }
+else load();
+</script>
+</body>
+</html>
