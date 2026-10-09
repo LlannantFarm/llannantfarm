@@ -120,6 +120,15 @@
     return { state: "closed", pill: c.nextSeason ? "Back " + c.nextSeason : "Closed", upcoming: [] };
   }
 
+  // Nothing in season: hide the strip, and its Squarespace section too if the strip is all that's in it
+  function hideStatus(root) {
+    root.style.display = "none";
+    var section = root.closest && root.closest("section");
+    if (section && section.querySelectorAll(".fe-block, .sqs-block").length <= 2 && !section.querySelector(".lf-block:not([data-show=status])")) {
+      section.style.display = "none";
+    }
+  }
+
   function renderStatus(root, data, crops, now) {
     var b = data.banner || {};
     var btn = function (href, label) { href = safeUrl(href); return href ? '<a class="lf-btn" href="' + esc(href) + '">' + esc(label) + "</a>" : ""; };
@@ -133,7 +142,7 @@
       if (s.state === "closed") return;
       if (!picked || (s.state === "open" && picked.s.state !== "open") || (s.state === picked.s.state && s.upcoming[0] < picked.s.upcoming[0])) picked = { c: c, s: s };
     });
-    if (!picked) { root.style.display = "none"; return; }
+    if (!picked) { hideStatus(root); return; }
     var c = picked.c, s = picked.s;
     var title = "<strong>" + esc(c.emoji || "") + " Pick your own " + esc(c.name.toLowerCase()) + ": " +
       esc(s.state === "open" ? s.headline : fmtDates(s.upcoming) + ", " + hours(c)) + "</strong>";
@@ -152,7 +161,7 @@
         : fmtDates(s.upcoming) + ", " + hours(c);
       var book = s.state !== "closed" && safeUrl(c.bookingUrl);
       return '<article class="lf-card"><div class="lf-media">' +
-        (img ? '<img src="' + esc(img) + '" alt="' + esc(c.name) + '" loading="lazy">' : esc(c.emoji || "")) + "</div>" +
+        (img ? '<img src="' + esc(img) + '" alt="' + esc(c.imageAlt || c.name) + '" loading="lazy">' : esc(c.emoji || "")) + "</div>" +
         '<div class="lf-cbody"><div><span class="lf-pill ' + s.state + '">' + esc(s.pill) + "</span></div>" +
         '<h3 class="lf-cname">' + esc(c.name) + "</h3>" +
         (c.season ? '<p class="lf-meta">' + esc(c.season) + "</p>" : "") +
@@ -208,6 +217,6 @@
       });
     })
     .catch(function () {
-      roots.forEach(function (root) { if (root.getAttribute("data-show") === "status") root.style.display = "none"; });
+      roots.forEach(function (root) { if (root.getAttribute("data-show") === "status") hideStatus(root); });
     });
 })();

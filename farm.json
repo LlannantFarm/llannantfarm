@@ -19,7 +19,8 @@
       "closedNote": "Pumpkin picking is finished for this year. Thank you to everyone who came along!",
       "nextSeason": "October 2027",
       "bookingUrl": "",
-      "image": ""
+      "image": "https://llannantfarm.github.io/llannantfarm/images/pumpkin-patch.jpg",
+      "imageAlt": "Two children sitting on pumpkins next to a flowerpot scarecrow in the Llannant Farm pumpkin patch"
     },
     {
       "id": "sweetcorn",
