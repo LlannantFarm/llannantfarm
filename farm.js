@@ -58,6 +58,9 @@
       ".lf-fact{border-left:4px solid var(--lf-accent);padding:4px 0 4px 14px}" +
       ".lf-fact strong{display:block}" +
       ".lf-fact p{margin:0}" +
+      ".lf-block .lf-fact a{color:var(--lf-accent)!important;font-weight:600;text-decoration:underline!important;text-underline-offset:3px}" +
+      ".lf-block .lf-fact a.lf-btn{display:inline-block;margin-top:8px;padding:.5em 1.1em;font-size:.95em;text-decoration:none!important;color:#fff!important;background:var(--lf-accent);white-space:normal;max-width:100%}" +
+      ".lf-fact.lf-wide{grid-column:1/-1}" +
       ".lf-faq details{border-bottom:1px solid rgba(128,128,128,.25);padding:12px 0}" +
       ".lf-faq summary{cursor:pointer;font-weight:600}" +
       ".lf-faq details p{margin:.5em 0 0;opacity:.85}";
@@ -178,7 +181,7 @@
     var addr = [v.address, v.postcode].filter(Boolean).join(", ");
     if (addr) {
       var maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Llannant Farm, " + addr);
-      facts.push({ label: "Address", html: esc(addr) + '<br><a href="' + esc(maps) + '" target="_blank" rel="noopener">Open in Google Maps</a>' });
+      facts.push({ label: "Address", wide: true, html: esc(addr) + '<br><a class="lf-btn" href="' + esc(maps) + '" target="_blank" rel="noopener">📍 Directions in Google Maps</a>' });
     }
     if (v.what3words) {
       var w = v.what3words.replace(/^\/+/, "");
@@ -193,7 +196,7 @@
     var faqs = (v.faqs || []).filter(function (f) { return f.q && f.a; });
     root.innerHTML =
       (facts.length ? '<div class="lf-facts">' + facts.map(function (f) {
-        return '<div class="lf-fact"><strong>' + esc(f.label) + "</strong><p>" + f.html + "</p></div>";
+        return '<div class="lf-fact' + (f.wide ? " lf-wide" : "") + '"><strong>' + esc(f.label) + "</strong><p>" + f.html + "</p></div>";
       }).join("") + "</div>" : "") +
       (faqs.length ? '<div class="lf-faq">' + faqs.map(function (f) {
         return "<details><summary>" + esc(f.q) + "</summary><p>" + esc(f.a) + "</p></details>";
