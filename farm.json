@@ -15,10 +15,10 @@
       "close": "16:00",
       "soldOut": false,
       "tagline": "Small patch, so once they're gone, they're gone!",
-      "description": "Big Loretta pumpkins, proper carvers. It's only a small patch, so once they're gone, they're gone!",
+      "description": "Big Loretta pumpkins, proper carvers. Every visit includes a free farm tour: meet our cows, ponies and tractors. You only pay for the pumpkins you pick.",
       "closedNote": "Pumpkin picking is finished for this year. Thank you to everyone who came along!",
       "nextSeason": "October 2027",
-      "bookingUrl": "",
+      "bookingUrl": "https://buytickets.at/llannantfarm/2468948",
       "image": "https://llannantfarm.github.io/llannantfarm/images/pumpkin-patch.jpg",
       "imageAlt": "Two children sitting on pumpkins next to a flowerpot scarecrow in the Llannant Farm pumpkin patch"
     },
@@ -45,11 +45,12 @@
     "what3words": "",
     "directions": "Park on the big concrete yard as you come into the farm. The pumpkin patch is a short walk down on the left.",
     "facts": [
+      { "label": "Free farm tour", "text": "Meet our cows, ponies and tractors. Free with every visit." },
       { "label": "Bring", "text": "Wellies. It's a working field." },
       { "label": "Before you set off", "text": "Check our Facebook page for any last-minute changes." }
     ],
     "faqs": [
-      { "q": "Do I need to book?", "a": "No, just turn up during opening hours. It's a small patch, so come early for the best pick." },
+      { "q": "Do I need to book?", "a": "Booking is free and optional. It guarantees your arrival time, and walk-ins are welcome if there's room. One booking covers one car of up to 6 people." },
       { "q": "What if the weather's bad?", "a": "If we have to close, we'll post on our Facebook page and update this page." }
     ]
   },

@@ -181,7 +181,8 @@
     var facts = [];
     var addr = [v.address, v.postcode].filter(Boolean).join(", ");
     if (addr) {
-      var maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Llannant Farm, " + addr);
+      // Search the postcode alone: the farm isn't a Google Maps business, so "Llannant Farm, …" matches other farms
+      var maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(v.mapsQuery || v.postcode || addr);
       facts.push({ label: "Address", wide: true, html: esc(addr) + '<br><a class="lf-btn" href="' + esc(maps) + '" target="_blank" rel="noopener">📍 Directions in Google Maps</a>' });
     }
     if (v.what3words) {
