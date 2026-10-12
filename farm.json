@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09",
+  "updated": "2026-10-12",
   "banner": {
     "message": "",
     "link": ""
@@ -10,7 +10,7 @@
       "name": "Pumpkins",
       "emoji": "🎃",
       "season": "October",
-      "dates": ["2026-10-10", "2026-10-17"],
+      "dates": ["2026-10-17", "2026-10-18"],
       "open": "10:00",
       "close": "16:00",
       "soldOut": false,

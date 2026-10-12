@@ -96,7 +96,7 @@
     var p = parts(d);
     return DAYS[p.wd] + " " + p.d + " " + MONTHS[p.m];
   }
-  // "Saturdays 10 & 17 October", or "Saturday 10 October & Sunday 11 October"
+  // "Saturdays 10 & 17 October", "Saturday 17 & Sunday 18 October", or "Saturday 31 October & Sunday 1 November"
   function fmtDates(list) {
     if (!list.length) return "";
     var ps = list.map(parts);
@@ -104,6 +104,7 @@
     var sameMonth = ps.every(function (p) { return p.m === ps[0].m; });
     var join = function (a) { return a.length < 2 ? a[0] : a.slice(0, -1).join(", ") + " & " + a[a.length - 1]; };
     if (sameMonth && sameDay) return DAYS[ps[0].wd] + (ps.length > 1 ? "s " : " ") + join(ps.map(function (p) { return p.d; })) + " " + MONTHS[ps[0].m];
+    if (sameMonth) return join(ps.map(function (p) { return DAYS[p.wd] + " " + p.d; })) + " " + MONTHS[ps[0].m];
     return join(ps.map(function (p) { return DAYS[p.wd] + " " + p.d + " " + MONTHS[p.m]; }));
   }
   function hours(c) { return fmtTime(c.open || "10:00") + "–" + fmtTime(c.close || "16:00"); }
