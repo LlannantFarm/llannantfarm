@@ -7,6 +7,7 @@
  * Attributes on each .lf-block div:
  *   data-show="status"      what to draw: status, seasons, visit or reviews (required)
  *   data-limit="3"          reviews only: show just the first few (e.g. a homepage teaser)
+ *   data-more="/reviews"    reviews only: where the button goes (default: the Facebook reviews page)
  *   data-crop="pumpkins"    only this crop (status and seasons)
  *   data-link="/#visit"     where the status strip's button goes when there's no booking link
  *   data-accent="#d4652a"   accent colour
@@ -221,7 +222,8 @@
     var limit = parseInt(root.getAttribute("data-limit"), 10) || 0;
     var items = (r.items || []).filter(function (i) { return i.text; });
     if (limit) items = items.slice(0, limit);
-    var link = safeUrl(r.link);
+    var more = safeUrl(root.getAttribute("data-more"));
+    var link = more || safeUrl(r.link);
     var summary = [r.summary, r.count ? r.count + " reviews on Facebook" : ""].filter(Boolean).join(" · ");
     root.innerHTML =
       (summary ? '<p class="lf-rsummary"><span aria-hidden="true">★</span> ' + esc(summary) + "</p>" : "") +
@@ -229,8 +231,8 @@
         return '<figure class="lf-review"><blockquote>' + esc(i.text) + "</blockquote>" +
           '<figcaption><strong>' + esc(i.name) + "</strong>" + (i.when ? " · " + esc(i.when) : "") + "</figcaption></figure>";
       }).join("") + "</div>" +
-      (link ? '<p class="lf-rmore"><a class="lf-btn" href="' + esc(link) + '" target="_blank" rel="noopener">' +
-        esc(limit ? "Read more reviews" : "Read all our reviews on Facebook") + "</a></p>" : "");
+      (link ? '<p class="lf-rmore"><a class="lf-btn" href="' + esc(link) + '"' + (more ? "" : ' target="_blank" rel="noopener"') + ">" +
+        esc(more ? "Read all " + (r.count || "") + " reviews" : limit ? "Read more reviews" : "Read all our reviews on Facebook").replace("  ", " ") + "</a></p>" : "");
   }
 
   var RENDER = { status: renderStatus, seasons: renderSeasons, visit: renderVisit, reviews: renderReviews };
