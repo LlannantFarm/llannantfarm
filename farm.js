@@ -5,7 +5,8 @@
  *   <script src="https://llannantfarm.github.io/llannantfarm/farm.js" defer></script>
  *
  * Attributes on each .lf-block div:
- *   data-show="status"      what to draw: status, seasons or visit (required)
+ *   data-show="status"      what to draw: status, seasons, visit or reviews (required)
+ *   data-limit="3"          reviews only: show just the first few (e.g. a homepage teaser)
  *   data-crop="pumpkins"    only this crop (status and seasons)
  *   data-link="/#visit"     where the status strip's button goes when there's no booking link
  *   data-accent="#d4652a"   accent colour
@@ -63,7 +64,16 @@
       ".lf-fact.lf-wide{grid-column:1/-1}" +
       ".lf-faq details{border-bottom:1px solid rgba(128,128,128,.25);padding:12px 0}" +
       ".lf-faq summary{cursor:pointer;font-weight:600}" +
-      ".lf-faq details p{margin:.5em 0 0;opacity:.85}";
+      ".lf-faq details p{margin:.5em 0 0;opacity:.85}" +
+      /* reviews */
+      ".lf-rsummary{font-weight:600;font-size:1.1em;margin:0 0 1.2em}" +
+      ".lf-rsummary span{color:var(--lf-accent)}" +
+      ".lf-reviews{columns:3 280px;column-gap:24px}" +
+      ".lf-review{break-inside:avoid;margin:0 0 24px;padding:20px 22px;border-radius:14px;background:rgba(128,128,128,.08);border-left:4px solid var(--lf-accent)}" +
+      ".lf-review blockquote{margin:0 0 12px;padding:0;border:0;font-style:normal;font-size:1em;line-height:1.6;quotes:none;white-space:pre-line}" +
+      ".lf-review blockquote:before,.lf-review blockquote:after{content:none}" +
+      ".lf-review figcaption{font-size:.9em;opacity:.8}" +
+      ".lf-rmore{margin:8px 0 0}";
     document.head.appendChild(css);
   }
 
@@ -205,7 +215,25 @@
       }).join("") + "</div>" : "");
   }
 
-  var RENDER = { status: renderStatus, seasons: renderSeasons, visit: renderVisit };
+  // Reviews copied word for word from the Facebook page, shown as quote cards
+  function renderReviews(root, data) {
+    var r = data.reviews || {};
+    var limit = parseInt(root.getAttribute("data-limit"), 10) || 0;
+    var items = (r.items || []).filter(function (i) { return i.text; });
+    if (limit) items = items.slice(0, limit);
+    var link = safeUrl(r.link);
+    var summary = [r.summary, r.count ? r.count + " reviews on Facebook" : ""].filter(Boolean).join(" · ");
+    root.innerHTML =
+      (summary ? '<p class="lf-rsummary"><span aria-hidden="true">★</span> ' + esc(summary) + "</p>" : "") +
+      '<div class="lf-reviews">' + items.map(function (i) {
+        return '<figure class="lf-review"><blockquote>' + esc(i.text) + "</blockquote>" +
+          '<figcaption><strong>' + esc(i.name) + "</strong>" + (i.when ? " · " + esc(i.when) : "") + "</figcaption></figure>";
+      }).join("") + "</div>" +
+      (link ? '<p class="lf-rmore"><a class="lf-btn" href="' + esc(link) + '" target="_blank" rel="noopener">' +
+        esc(limit ? "Read more reviews" : "Read all our reviews on Facebook") + "</a></p>" : "");
+  }
+
+  var RENDER = { status: renderStatus, seasons: renderSeasons, visit: renderVisit, reviews: renderReviews };
 
   // Bust GitHub Pages' 10-minute browser cache once a minute so edits show up quickly
   fetch(base + "farm.json?v=" + Math.floor(Date.now() / 60000))
