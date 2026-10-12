@@ -43,6 +43,7 @@
       ".lf-status.open .lf-dot{background:#7ddc6a;box-shadow:0 0 0 4px rgba(125,220,106,.3)}" +
       ".lf-status .lf-stext{font-size:1.05em}" +
       ".lf-status .lf-stext small{display:block;opacity:.85;font-size:.85em}" +
+      "@media (max-width:640px){.lf-block[data-show=status]{padding:16px 0}}" +
       /* season cards */
       ".lf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:24px}" +
       ".lf-card{display:flex;flex-direction:column;border:1px solid rgba(128,128,128,.25);border-radius:14px;overflow:hidden;min-width:0}" +
