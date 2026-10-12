@@ -5,7 +5,7 @@
  *   <script src="https://llannantfarm.github.io/llannantfarm/farm.js" defer></script>
  *
  * Attributes on each .lf-block div:
- *   data-show="status"      what to draw: status, seasons, visit or reviews (required)
+ *   data-show="status"      what to draw: status, seasons, visit, reviews or gallery (required)
  *   data-limit="3"          reviews only: show just the first few (e.g. a homepage teaser)
  *   data-more="/reviews"    reviews only: where the button goes (default: the Facebook reviews page)
  *   data-crop="pumpkins"    only this crop (status and seasons)
@@ -74,7 +74,17 @@
       ".lf-review blockquote{margin:0 0 12px;padding:0;border:0;font-style:normal;font-size:1em;line-height:1.6;quotes:none;white-space:pre-line}" +
       ".lf-review blockquote:before,.lf-review blockquote:after{content:none}" +
       ".lf-review figcaption{font-size:.9em;opacity:.8}" +
-      ".lf-rmore{margin:8px 0 0}";
+      ".lf-rmore{margin:8px 0 0}" +
+      /* photo gallery */
+      ".lf-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}" +
+      "@media (max-width:640px){.lf-gallery{grid-template-columns:repeat(2,1fr);gap:10px}}" +
+      ".lf-photo{margin:0;position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/3;background:#ddd;cursor:zoom-in}" +
+      ".lf-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}" +
+      ".lf-photo:hover img{transform:scale(1.04)}" +
+      ".lf-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;color:#fff;font-size:.88em;font-weight:600;background:linear-gradient(transparent,rgba(0,0,0,.6))}" +
+      ".lf-lightbox{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}" +
+      ".lf-lightbox img{max-width:100%;max-height:85vh;border-radius:8px}" +
+      ".lf-lightbox p{color:#fff;margin:12px 0 0;font-family:inherit;text-align:center}";
     document.head.appendChild(css);
   }
 
@@ -235,7 +245,34 @@
         esc(more ? "Read all " + (r.count || "") + " reviews" : limit ? "Read more reviews" : "Read all our reviews on Facebook").replace("  ", " ") + "</a></p>" : "");
   }
 
-  var RENDER = { status: renderStatus, seasons: renderSeasons, visit: renderVisit, reviews: renderReviews };
+  // Same-size photo tiles with captions; tap one to see it full size
+  function renderGallery(root, data) {
+    var limit = parseInt(root.getAttribute("data-limit"), 10) || 0;
+    var photos = (data.gallery || []).filter(function (p) { return safeUrl(p.src); });
+    if (limit) photos = photos.slice(0, limit);
+    root.innerHTML = '<div class="lf-gallery">' + photos.map(function (p, i) {
+      return '<figure class="lf-photo" data-i="' + i + '" tabindex="0" role="button" aria-label="' + esc("View photo: " + (p.caption || p.alt || "")) + '">' +
+        '<img src="' + esc(p.src) + '" alt="' + esc(p.alt || p.caption || "") + '" loading="lazy">' +
+        (p.caption ? "<figcaption>" + esc(p.caption) + "</figcaption>" : "") + "</figure>";
+    }).join("") + "</div>";
+    function open(i) {
+      var p = photos[i], box = document.createElement("div");
+      box.className = "lf-lightbox";
+      box.setAttribute("role", "dialog");
+      box.innerHTML = '<img src="' + esc(p.full || p.src) + '" alt="' + esc(p.alt || p.caption || "") + '">' + (p.caption ? "<p>" + esc(p.caption) + "</p>" : "");
+      function close() { box.remove(); document.removeEventListener("keydown", onKey); }
+      function onKey(e) { if (e.key === "Escape") close(); }
+      box.addEventListener("click", close);
+      document.addEventListener("keydown", onKey);
+      document.body.appendChild(box);
+    }
+    [].forEach.call(root.querySelectorAll(".lf-photo"), function (f) {
+      f.addEventListener("click", function () { open(+f.getAttribute("data-i")); });
+      f.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(+f.getAttribute("data-i")); } });
+    });
+  }
+
+  var RENDER = { status: renderStatus, seasons: renderSeasons, visit: renderVisit, reviews: renderReviews, gallery: renderGallery };
 
   // Bust GitHub Pages' 10-minute browser cache once a minute so edits show up quickly
   fetch(base + "farm.json?v=" + Math.floor(Date.now() / 60000))

@@ -54,6 +54,14 @@
       { "q": "What if the weather's bad?", "a": "If we have to close, we'll post on our Facebook page and update this page." }
     ]
   },
+  "gallery": [
+    { "src": "https://llannantfarm.github.io/llannantfarm/images/pumpkin-patch.jpg", "caption": "The pumpkin patch in October", "alt": "Two children sitting on pumpkins next to a flowerpot scarecrow in the pumpkin patch" },
+    { "src": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/664d8856-8c42-4afd-965d-343bd8650420/IMG_3977.JPEG?format=750w", "full": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/664d8856-8c42-4afd-965d-343bd8650420/IMG_3977.JPEG?format=1500w", "caption": "Our cattle out grazing", "alt": "Cattle grazing in a field at Llannant Farm" },
+    { "src": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/0e39a956-192c-4e98-8444-241e04686802/IMG_0354.JPEG?format=750w", "full": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/0e39a956-192c-4e98-8444-241e04686802/IMG_0354.JPEG?format=1500w", "caption": "Rows of sweetcorn in summer", "alt": "Rows of sweetcorn plants growing in the field" },
+    { "src": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/82954dec-223f-4d01-b18a-9478d2974f37/IMG_0807_SnapseedCopy.JPEG?format=750w", "full": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/82954dec-223f-4d01-b18a-9478d2974f37/IMG_0807_SnapseedCopy.JPEG?format=1500w", "caption": "Fresh-picked cobs", "alt": "Two sweetcorn cobs on a plate" },
+    { "src": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/dfe3b7d0-b73d-4410-afee-3923ec4a5d71/IMG_0264.JPEG?format=750w", "full": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/dfe3b7d0-b73d-4410-afee-3923ec4a5d71/IMG_0264.JPEG?format=1500w", "caption": "Summer veg and sunflowers", "alt": "A bucket of sunflowers with freshly picked vegetables beside sweetcorn" },
+    { "src": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/82234652-0cb3-4cb6-8a20-957c99da60ae/536000904_10172248002965707_39114841440495198_n.jpg?format=750w", "full": "https://images.squarespace-cdn.com/content/v1/614f03070a777f16df186253/82234652-0cb3-4cb6-8a20-957c99da60ae/536000904_10172248002965707_39114841440495198_n.jpg?format=1500w", "caption": "Picking straight from the stalk", "alt": "Tall sweetcorn plants with a crate of picked cobs" }
+  ],
   "reviews": {
     "summary": "100% recommend",
     "count": 28,
