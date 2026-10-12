@@ -76,8 +76,8 @@
       ".lf-review figcaption{font-size:.9em;opacity:.8}" +
       ".lf-rmore{margin:8px 0 0}" +
       /* photo gallery */
-      ".lf-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}" +
-      "@media (max-width:640px){.lf-gallery{grid-template-columns:repeat(2,1fr);gap:10px}}" +
+      ".lf-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}" +
+      "@media (max-width:640px){.lf-gallery{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}.lf-photo figcaption{font-size:.75em;padding:16px 8px 6px}}" +
       ".lf-photo{margin:0;position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/3;background:#ddd;cursor:zoom-in}" +
       ".lf-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}" +
       ".lf-photo:hover img{transform:scale(1.04)}" +
