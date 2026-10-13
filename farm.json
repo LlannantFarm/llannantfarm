@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-12",
+  "updated": "2026-10-13",
   "banner": {
     "message": "",
     "link": ""
@@ -13,6 +13,7 @@
       "dates": ["2026-10-17", "2026-10-18"],
       "open": "10:00",
       "close": "16:00",
+      "dayHours": { "2026-10-18": { "close": "13:00" } },
       "soldOut": false,
       "tagline": "Small patch, so once they're gone, they're gone!",
       "description": "Big Loretta pumpkins, proper carvers. Every visit includes a free farm tour: meet our cows, ponies and tractors. You only pay for the pumpkins you pick.",

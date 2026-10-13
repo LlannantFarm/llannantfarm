@@ -129,18 +129,31 @@
     if (sameMonth) return join(ps.map(function (p) { return DAYS[p.wd] + " " + p.d; })) + " " + MONTHS[ps[0].m];
     return join(ps.map(function (p) { return DAYS[p.wd] + " " + p.d + " " + MONTHS[p.m]; }));
   }
-  function hours(c) { return fmtTime(c.open || "10:00") + "–" + fmtTime(c.close || "16:00"); }
+  // Opening hours for one day: "dayHours": {"2026-10-18": {"close": "13:00"}} overrides the crop's usual open/close
+  function dayTimes(c, d) {
+    var o = (c.dayHours || {})[d] || {};
+    return { open: o.open || c.open || "10:00", close: o.close || c.close || "16:00" };
+  }
+  function hours(c, d) { var t = dayTimes(c, d); return fmtTime(t.open) + "–" + fmtTime(t.close); }
+  // "Saturday 17 & Sunday 18 October, 10am–4pm", or per day when the hours differ:
+  // ["Saturday 17 October 10am–4pm", "Sunday 18 October 10am–1pm"]
+  function whenLines(c, list) {
+    var h = list.map(function (d) { return hours(c, d); });
+    if (h.every(function (x) { return x === h[0]; })) return [fmtDates(list) + ", " + h[0]];
+    return list.map(function (d, i) { return fmtDates([d]) + " " + h[i]; });
+  }
+  function whenText(c, list) { return whenLines(c, list).join(" & "); }
 
   // open | soon | closed, with the wording to go with it
   function cropState(c, now) {
     var dates = (c.dates || []).slice().sort();
-    var openM = mins(c.open || "10:00"), closeM = mins(c.close || "16:00");
+    var t = dayTimes(c, now.date), openM = mins(t.open), closeM = mins(t.close);
     var upcoming = dates.filter(function (d) { return d > now.date || (d === now.date && now.mins < closeM); });
     if (c.soldOut) return { state: "closed", pill: "Sold out", upcoming: [] };
     if (upcoming[0] === now.date) {
       return now.mins >= openM
-        ? { state: "open", pill: "Open now", headline: "open now until " + fmtTime(c.close || "16:00"), upcoming: upcoming }
-        : { state: "open", pill: "Open today", headline: "open today, " + hours(c), upcoming: upcoming };
+        ? { state: "open", pill: "Open now", headline: "open now until " + fmtTime(t.close), upcoming: upcoming }
+        : { state: "open", pill: "Open today", headline: "open today, " + hours(c, now.date), upcoming: upcoming };
     }
     if (upcoming.length) return { state: "soon", pill: "Next open " + fmtDay(upcoming[0], now.date), headline: "next open " + fmtDay(upcoming[0], now.date), upcoming: upcoming };
     return { state: "closed", pill: c.nextSeason ? "Back " + c.nextSeason : "Closed", upcoming: [] };
@@ -171,7 +184,7 @@
     if (!picked) { hideStatus(root); return; }
     var c = picked.c, s = picked.s;
     var title = "<strong>" + esc(c.emoji || "") + " Pick your own " + esc(c.name.toLowerCase()) + ": " +
-      esc(s.state === "open" ? s.headline : fmtDates(s.upcoming) + ", " + hours(c)) + "</strong>";
+      esc(s.state === "open" ? s.headline : whenText(c, s.upcoming)) + "</strong>";
     var sub = s.state === "soon" ? "Next open " + fmtDay(s.upcoming[0], now.date) + (c.tagline ? ". " + c.tagline : "") : c.tagline;
     root.innerHTML = '<div class="lf-status ' + s.state + '"><span class="lf-dot"></span><span class="lf-stext">' + title +
       (sub ? "<small>" + esc(sub) + "</small>" : "") + "</span>" +
@@ -184,7 +197,7 @@
       var img = safeUrl(c.image);
       var when = s.state === "closed"
         ? (c.soldOut ? "Sold out. Thank you!" : c.closedNote || "")
-        : fmtDates(s.upcoming) + ", " + hours(c);
+        : whenText(c, s.upcoming);
       var book = s.state !== "closed" && safeUrl(c.bookingUrl);
       return '<article class="lf-card"><div class="lf-media">' +
         (img ? '<img src="' + esc(img) + '" alt="' + esc(c.imageAlt || c.name) + '" loading="lazy">' : esc(c.emoji || "")) + "</div>" +
@@ -214,7 +227,7 @@
     if (v.directions) facts.push({ label: "Directions", html: esc(v.directions) });
     crops.forEach(function (c) {
       var s = cropState(c, now);
-      if (s.state !== "closed") facts.push({ label: (c.emoji ? c.emoji + " " : "") + c.name, html: esc(fmtDates(s.upcoming)) + "<br>" + esc(hours(c)) });
+      if (s.state !== "closed") facts.push({ label: (c.emoji ? c.emoji + " " : "") + c.name, html: whenLines(c, s.upcoming).map(esc).join("<br>") });
     });
     (v.facts || []).forEach(function (f) { if (f.label && f.text) facts.push({ label: f.label, html: esc(f.text) }); });
     var faqs = (v.faqs || []).filter(function (f) { return f.q && f.a; });
